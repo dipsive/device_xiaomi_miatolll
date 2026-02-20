@@ -186,6 +186,7 @@ debug.hwui.use_hint_manager=true
 debug.hwui.target_cpu_time_percent=30
 debug.hwui.show_overdraw=false
 debug.hwui.use_triple_buffering=true
+debug.sf.enable_adpf_cpu_hint=true
 
 # Keystore
 ro.hardware.keystore_desede=true
