@@ -30,3 +30,31 @@ PRODUCT_GMS_CLIENTID_BASE := android-xiaomi
 PRODUCT_BUILD_PROP_OVERRIDES += \
     BuildDesc="miatoll_global-user 12 SKQ1.211019.001 V14.0.3.0.SJZMIXM release-keys" \
     BuildFingerprint=Redmi/miatoll_global/miatoll:12/RKQ1.211019.001/V14.0.3.0.SJZMIXM:user/release-keys
+
+#Avium flags
+AVIUM_VERSION_APPEND_TIME_OF_DAY := false
+# Maintainer
+AVIUM_MAINTAINER := KimChi
+
+# Settings
+# Soc model name
+AVIUM_SETTINGS_SOC_MODEL_NAME := Snapdragon_720G
+
+# Device code name
+AVIUM_SETTINGS_DEVICE_CODENAME := Miatoll
+
+# GMS
+WITH_GMS := true
+
+# GSANS
+TARGET_USES_GSANS := false
+
+# GMS builds will use the Google IME from GMS.
+TARGET_INCLUDE_GOOGLEIME := false
+TARGET_GOOGLEIME_OVERRIDE_IME := false
+
+# Spoof Props
+AVIUM_FORCE_SET_FAKE_PROP := true
+
+# Blur Effect
+TARGET_FORCE_ENABLE_BLUR := true
