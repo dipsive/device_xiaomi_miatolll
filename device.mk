@@ -17,7 +17,7 @@ PRODUCT_AAPT_CONFIG := normal
 PRODUCT_AAPT_PREF_CONFIG := xxhdpi
 
 # Dolby Atmos
-$(call inherit-product, vendor/sony/dolby/dolby.mk)
+$(call inherit-product, hardware/dolby/dolby.mk)
 
 # Audio
 PRODUCT_PACKAGES += \
