@@ -35,8 +35,6 @@ function configure_zram_parameters() {
 	MemTotalStr=`cat /proc/meminfo | grep MemTotal`
 	MemTotal=${MemTotalStr:16:8}
 
-	# Zram disk - 75% for < 2GB devices.
-	# For >2GB devices, size = 50% of RAM size. Limit the size to 4GB.
 
 	let RamSizeGB="( $MemTotal / 1048576 ) + 1"
 	diskSizeUnit=M
@@ -51,6 +49,7 @@ function configure_zram_parameters() {
 		let zRamSizeMB=4096
 	fi
 
+        # And enable lz4 zram compression
 	echo lz4 > /sys/block/zram0/comp_algorithm
 
 	if [ -f /sys/block/zram0/disksize ]; then
@@ -79,7 +78,7 @@ function configure_memory_parameters() {
 	# Set allocstall_threshold to 0 for all targets.
 	# Set swappiness to 100 for all targets
 	echo 0 > /sys/module/vmpressure/parameters/allocstall_threshold
-	echo 100 > /proc/sys/vm/swappiness
+	echo 120 > /proc/sys/vm/swappiness
 
 	# Disable wsf for all targets beacause we are using efk.
 	# wsf Range : 1..1000 So set to bare minimum value 1.
@@ -92,46 +91,45 @@ function configure_memory_parameters() {
 
 # Core control parameters on silver
 echo 0 0 0 0 1 1 > /sys/devices/system/cpu/cpu0/core_ctl/not_preferred
-echo 4 > /sys/devices/system/cpu/cpu0/core_ctl/min_cpus
-echo 60 > /sys/devices/system/cpu/cpu0/core_ctl/busy_up_thres
-echo 40 > /sys/devices/system/cpu/cpu0/core_ctl/busy_down_thres
+echo 2 > /sys/devices/system/cpu/cpu0/core_ctl/min_cpus
+echo 70 > /sys/devices/system/cpu/cpu0/core_ctl/busy_up_thres
+echo 30 > /sys/devices/system/cpu/cpu0/core_ctl/busy_down_thres
 echo 100 > /sys/devices/system/cpu/cpu0/core_ctl/offline_delay_ms
-echo 8 > /sys/devices/system/cpu/cpu0/core_ctl/task_thres
+echo 4 > /sys/devices/system/cpu/cpu0/core_ctl/task_thres
 echo 0 > /sys/devices/system/cpu/cpu6/core_ctl/enable
 
 # Setting b.L scheduler parameters
-# default sched up and down migrate values are 95 and 85
-echo 65 > /proc/sys/kernel/sched_downmigrate
-echo 71 > /proc/sys/kernel/sched_upmigrate
+echo 70 85 > /proc/sys/kernel/sched_downmigrate
+echo 80 95 > /proc/sys/kernel/sched_upmigrate
 # default sched up and down migrate values are 100 and 95
-echo 85 > /proc/sys/kernel/sched_group_downmigrate
-echo 100 > /proc/sys/kernel/sched_group_upmigrate
-echo 1 > /proc/sys/kernel/sched_walt_rotate_big_tasks
+echo 80 > /proc/sys/kernel/sched_group_downmigrate
+echo 90 > /proc/sys/kernel/sched_group_upmigrate
+echo 4 > /proc/sys/kernel/sched_walt_rotate_big_tasks
 
 #colocation v3 settings
 echo 740000 > /proc/sys/kernel/sched_little_cluster_coloc_fmin_khz
 
 # configure governor settings for little cluster
 echo "schedutil" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
-echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/schedutil/up_rate_limit_us
-echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/schedutil/down_rate_limit_us
+echo 500 > /sys/devices/system/cpu/cpu0/cpufreq/schedutil/up_rate_limit_us
+echo 1000 > /sys/devices/system/cpu/cpu0/cpufreq/schedutil/down_rate_limit_us
 echo 1248000 > /sys/devices/system/cpu/cpu0/cpufreq/schedutil/hispeed_freq
 echo 576000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
 
 # configure governor settings for big cluster
 echo "schedutil" > /sys/devices/system/cpu/cpu6/cpufreq/scaling_governor
-echo 0 > /sys/devices/system/cpu/cpu6/cpufreq/schedutil/up_rate_limit_us
-echo 0 > /sys/devices/system/cpu/cpu6/cpufreq/schedutil/down_rate_limit_us
+echo 500 > /sys/devices/system/cpu/cpu6/cpufreq/schedutil/up_rate_limit_us
+echo 1000 > /sys/devices/system/cpu/cpu6/cpufreq/schedutil/down_rate_limit_us
 echo 1267200 > /sys/devices/system/cpu/cpu6/cpufreq/schedutil/hispeed_freq
 echo 652800 > /sys/devices/system/cpu/cpu6/cpufreq/scaling_min_freq
 
 # sched_load_boost as -6 is equivalent to target load as 85. It is per cpu tunable.
 echo -6 >  /sys/devices/system/cpu/cpu6/sched_load_boost
 echo -6 >  /sys/devices/system/cpu/cpu7/sched_load_boost
-echo 85 > /sys/devices/system/cpu/cpu6/cpufreq/schedutil/hispeed_load
+echo 90 > /sys/devices/system/cpu/cpu6/cpufreq/schedutil/hispeed_load
 
-echo "0:1248000" > /sys/module/cpu_boost/parameters/input_boost_freq
-echo 40 > /sys/module/cpu_boost/parameters/input_boost_ms
+echo "0:1324800" > /sys/module/cpu_boost/parameters/input_boost_freq
+echo 150 > /sys/module/cpu_boost/parameters/input_boost_ms
 
 # Enable bus-dcvs
 for device in /sys/devices/platform/soc
